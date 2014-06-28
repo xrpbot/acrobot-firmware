@@ -1,0 +1,60 @@
+Motor encoder (AS5045)
+----------------------
+
+1 - black  - GND   - GND
+2 - red    - +5V   - +5V
+3 - blue   - PROG  - N/C
+4 - pink   - DO    - PE15
+5 - grey   - CLK   - PE11
+6 - yellow - CSn   - PE13
+
+NOTE: signal level is 3.3V!
+
+
+Axis encoder (AS5311)
+---------------------
+
+1 - black  - GND
+2 - red    - +5V
+3 - blue   - A
+4 - pink   - B
+5 - grey   - Idx
+6 - yellow - CSn
+7 - green  - CLK
+8 - brown  - DO
+
+
+Potentiometer (legacy)
+----------------------
+
+black  - GND        - GND
+red    - +3V        - +3V
+yellow - Analog out - PA1
+
+
+Serial interface
+----------------
+
+green  - TX (data from STM32) - PA2
+yellow - RX (data to STM32)   - PA3
+
+
+RS485 interface (ext. board)
+----------------------------
+
+blue        - RX (data to STM32)    - A
+blue/white  - nRX                   - B
+green/white - nTX (data from STM32) - Z
+green       - TX                    - Y
+
+
+Motor interface
+---------------
+
+1 - brown  - GND - GND
+2 - red    - UH  - PC6
+3 - orange - UL  - PA7
+4 - yellow - VH  - PC7
+5 - green  - VL  - PB14
+6 - blue   - WH  - PC8
+7 - pink   - WL  - PB15

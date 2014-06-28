@@ -1,0 +1,6 @@
+*.bin
+*.elf
+*.hex
+*.list
+*.srec
+*.pyc
