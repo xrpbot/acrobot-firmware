@@ -259,6 +259,10 @@ int main(void) {
     
     int last_pos = 0;
     int pos_offset = 0;
+    int last_center_pos = 0;
+    int center_pos_offset = 0;
+    int last_lower_pos = 0;
+    int lower_pos_offset = 0;
     
     int pwr = 0;
     // int comm_offset = 0;
@@ -347,6 +351,34 @@ int main(void) {
             commutate(com_phase, -pwr);
         }
         
+        /* Center encoder */
+        as5xxx_data_t center_ring_enc = ssi_read_center_ring();
+        
+        int center_vel = center_ring_enc.position - last_center_pos;
+        if(center_vel > 2048) {
+            center_vel -= 4096;
+            center_pos_offset -= 4096;
+        }
+        if(center_vel < -2048) {
+            center_vel += 4096;
+            center_pos_offset += 4096;
+        }
+        last_center_pos = center_ring_enc.position;
+        
+        /* Lower ring encoder */
+        as5xxx_data_t lower_ring_enc = ssi_read_lower_ring();
+        
+        int lower_vel = lower_ring_enc.position - last_lower_pos;
+        if(lower_vel > 2048) {
+            lower_vel -= 4096;
+            lower_pos_offset -= 4096;
+        }
+        if(lower_vel < -2048) {
+            lower_vel += 4096;
+            lower_pos_offset += 4096;
+        }
+        last_lower_pos = lower_ring_enc.position;
+        
         data_sample++;
         if(data_sample >= 50) {
             int vel = data.position - last_pos;
@@ -361,16 +393,21 @@ int main(void) {
             last_pos = data.position;
             int pos = data.position + pos_offset;
             
+            float real_center_vel = center_vel / 128. / 4096. * 2 * M_PI / ((100.*400.)/168000000.);
+            
             float real_pos = pos / 4096. * 2. * M_PI / 4.8;   // position in radians
             float real_vel = vel / 4096. * 2. * M_PI / 4.8 / ((100.*400.*50.)/168000000.);   // velocity in rad/s
             float des_pos, des_vel;
             if(control) {
-                des_pos = offset + A*sin(omega*t);
-                des_vel = A*omega*cos(omega*t);
-                float des_acc = -A*omega*omega*sin(omega*t);
+                //des_pos = offset + A*sin(omega*t);
+                //des_vel = A*omega*cos(omega*t);
+                //float des_acc = -A*omega*omega*sin(omega*t);
                 //des_pos = offset + A*get_des_pos(t);
                 //des_vel = A*get_des_vel(t);
                 //float des_acc = 0;
+                des_pos = A * atan(real_center_vel) + offset;
+                des_vel = 0.;
+                float des_acc = 0.;
                 
                 float output = p_gain*(des_pos - real_pos) + d_gain*(des_vel - real_vel) + ff_gain*des_acc;
                 // error_int += (des_vel - vel);
@@ -389,18 +426,17 @@ int main(void) {
             }
             
             as5xxx_data_t lower_axis_enc = ssi_read_lower_axis();
-            as5xxx_data_t lower_ring_enc = ssi_read_lower_ring();
-            as5xxx_data_t center_ring_enc = ssi_read_center_ring();
             
             data_sample = 0;
-            se_start_frame(14);
+            se_start_frame(20);
             se_puti16((int16_t)(real_vel*256));
             se_puti16((int16_t)(des_vel*256));
             se_puti16((int16_t)(real_pos*256));
             se_puti16((int16_t)(des_pos*256));
             se_puti16(lower_axis_enc.position);
-            se_puti16(lower_ring_enc.position);
-            se_puti16(center_ring_enc.position);
+            se_puti32(lower_ring_enc.position + lower_pos_offset);
+            se_puti32(center_ring_enc.position + center_pos_offset);
+            se_puti16(center_vel);
             se_send_frame();
             
             t += (100.*400.*50.)/168000000.;

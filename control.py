@@ -35,6 +35,14 @@ class Device:
         
         self.ser.write(enc_msg)
 
+def ss_header(titles):
+    header = struct.pack("=ii", 0x7FD85250, 1)
+    for t in titles:
+        header += struct.pack("=B", len(t))
+        for c in t:
+            header += struct.pack("=c", c)
+    return header
+
 class SerialReader(threading.Thread):
     def __init__(self, ser):
         threading.Thread.__init__(self)
@@ -43,16 +51,12 @@ class SerialReader(threading.Thread):
     
     def run(self):
         outfile = open("softscope.fifo", "w")
-        
-        titles = [ "vel", "des_vel", "pos", "des_pos" ]
-        ss_header = struct.pack("=ii", 0x7FD85250, 1)
-        for t in titles:
-            ss_header += struct.pack("=B", len(t))
-            for c in t:
-                ss_header += struct.pack("=c", c)
-        
-        outfile.write(ss_header)
+        outfile.write(ss_header([ "vel", "des_vel", "pos", "des_pos" ]))
         outfile.flush()
+        
+        sensor_fifo = open("sensors.fifo", "w")
+        sensor_fifo.write(ss_header([ "lower_axis", "lower_ring", "center_ring", "center_vel" ]))
+        sensor_fifo.flush()
         
         serdecode.init(self.ser)
         serdecode.resync()
@@ -62,10 +66,11 @@ class SerialReader(threading.Thread):
                 while True:
                     s = serdecode.read_frame()
                     
-                    (vel, des_vel, pos, des_pos, lower_axis, lower_ring, center_ring) = struct.unpack("=hhhhhhh", s)
+                    (vel, des_vel, pos, des_pos, lower_axis, lower_ring, center_ring, center_vel) = struct.unpack("=hhhhhiih", s)
                     outfile.write(struct.pack("=ffff", vel/256, des_vel/256, pos/256, des_pos/256))
-                    # outfile.write(struct.pack("=ffff", pos, lower_axis, lower_ring, center_ring))
+                    sensor_fifo.write(struct.pack("=ffff", lower_axis, lower_ring/32., center_ring, center_vel))
                     outfile.flush()
+                    sensor_fifo.flush()
             except serdecode.SerDecodeError as error:
                 print(error)
                 serdecode.resync()
@@ -127,7 +132,7 @@ class GUI:
         self.amplitude_var.set(0)
         Tkinter.Label(self.master, text="amplitude").grid(column=0, row=6)
         amplitude_widget = Tkinter.Scale(self.master, variable=self.amplitude_var, command=lambda x: self.value_changed_cb(),
-                                     resolution=0.1, from_=0, to=10, orient=Tkinter.HORIZONTAL)
+                                     resolution=0.1, from_=-10, to=10, orient=Tkinter.HORIZONTAL)
         amplitude_widget.grid(column=1, row=6, sticky=Tkinter.W+Tkinter.E)
         
         self.offset_var = Tkinter.DoubleVar()
