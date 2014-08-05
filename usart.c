@@ -1,8 +1,8 @@
 #include "usart.h"
-#include <libopencm3/stm32/f4/rcc.h>
-#include <libopencm3/stm32/f4/gpio.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
-#include <libopencm3/stm32/f4/dma.h>
+#include <libopencm3/stm32/dma.h>
 #include <libopencm3/stm32/f4/nvic.h>
 #include <errno.h>
 #include <stdio.h>
@@ -47,7 +47,7 @@ void usart_setup(void)
     usart_enable_rx_interrupt(USART2);
     
     /* Setup USART2 parameters. */
-    usart_set_baudrate(USART2, 230400);
+    usart_set_baudrate(USART2, 2500000);
     usart_set_databits(USART2, 8);
     usart_set_stopbits(USART2, USART_STOPBITS_1);
     usart_set_mode(USART2, USART_MODE_TX_RX);

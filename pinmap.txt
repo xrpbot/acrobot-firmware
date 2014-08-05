@@ -1,4 +1,4 @@
-Motor encoder (AS5045)
+Motor encoder (AS5040)
 ----------------------
 
 1 - black  - GND   - GND
@@ -7,6 +7,9 @@ Motor encoder (AS5045)
 4 - pink   - DO    - PE15
 5 - grey   - CLK   - PE11
 6 - yellow - CSn   - PE13
+7 - green  - A     - PB4
+8 - brown  - B     - PB5
+9 - white  - Index
 
 NOTE: signal level is 3.3V!
 
@@ -35,6 +38,7 @@ yellow - Analog out - PA1
 Serial interface
 ----------------
 
+!!! WRONG !!! FIXME !!!
 green  - TX (data from STM32) - PA2
 yellow - RX (data to STM32)   - PA3
 

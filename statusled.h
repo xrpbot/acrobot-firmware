@@ -1,8 +1,8 @@
 #ifndef PCBWRITER_STATUSLED_H
 #define PCBWRITER_STATUSLED_H
 
-#include <libopencm3/stm32/f4/rcc.h>
-#include <libopencm3/stm32/f4/gpio.h>
+#include <libopencm3/stm32/rcc.h>
+#include <libopencm3/stm32/gpio.h>
 
 #define LED_GREEN  GPIO12
 #define LED_ORANGE GPIO13
