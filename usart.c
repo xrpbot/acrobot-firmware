@@ -43,6 +43,7 @@ void usart_setup(void)
     gpio_set_af(GPIOA, GPIO_AF7, GPIO3);
     
     /* Enable IRQ */
+    nvic_set_priority(NVIC_USART2_IRQ, 0);
     nvic_enable_irq(NVIC_USART2_IRQ);
     usart_enable_rx_interrupt(USART2);
     

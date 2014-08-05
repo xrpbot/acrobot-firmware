@@ -155,6 +155,7 @@ void setup_pwm(void)
     timer_set_period(TIM8, 2048);
     timer_enable_break_main_output(TIM8);
     
+    nvic_set_priority(NVIC_TIM8_UP_TIM13_IRQ, 16);
     nvic_enable_irq(NVIC_TIM8_UP_TIM13_IRQ);
     timer_enable_irq(TIM8, TIM_DIER_UIE);
     
@@ -170,17 +171,16 @@ void tim8_up_tim13_isr(void)
         timer_clear_flag(TIM8, TIM_SR_UIF);
         gpio_set(GPIOB, GPIO1);
         holdoff = 0;
-        /* float pos = timer_get_counter(TIM3);
+        float pos = timer_get_counter(TIM3);
         float phi = pos / 512. * 7. * M_PI;
         
         float magf = (float) svm_mag;
         
         int32_t ua, ub;
         ua = magf * cosf(phi);
-        ub = magf * sinf(phi); */
+        ub = magf * sinf(phi);
         
-        // set_pwm_values(ua, ub);
-        set_pwm_values(svm_mag, 0);
+        set_pwm_values(ua, ub);
         
         gpio_clear(GPIOB, GPIO1);
     }
@@ -380,7 +380,7 @@ int main(void) {
                 
                 mag = (float) msg->mag;
                 offset = (float) msg->phase / 1024.;
-                svm_mag = 100;
+                svm_mag = msg->mag;
             }
             msg_ready = false;
         }
@@ -421,7 +421,5 @@ int main(void) {
         // se_puti16(data.position/4 - timer_get_counter(TIM3) + 16);
         se_puti16((uint16_t)(pos));
         se_send_frame();
-        
-        delay(1);
     }
 }
