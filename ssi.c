@@ -3,28 +3,29 @@
 #include <libopencm3/stm32/gpio.h>
 
 void ssi_delay(uint32_t time);
+as5xxx_data_t ssi_read(int do_port, int do_pin, int clk_port, int clk_pin, int csn_port, int csn_pin);
 
 void ssi_setup(void) {
-    rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_IOPBEN | RCC_AHB1ENR_IOPDEN | RCC_AHB1ENR_IOPEEN);
+    rcc_peripheral_enable_clock(&RCC_AHB1ENR, RCC_AHB1ENR_IOPDEN | RCC_AHB1ENR_IOPEEN);
     
     // Motor encoder
-    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO11 | GPIO13);
+    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO12 | GPIO13);
     gpio_set(GPIOE, GPIO13);   // set CSn to high
-    gpio_mode_setup(GPIOE, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO15);
+    gpio_mode_setup(GPIOE, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO11);
     
-    // Lower axis encoder
-    gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13 | GPIO15);
-    gpio_set(GPIOD, GPIO15);   // set CSn to high
-    gpio_mode_setup(GPIOD, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO11);
+    // Active axis center encoder
+    gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO10 | GPIO11);
+    gpio_set(GPIOD, GPIO11);   // set CSn to high
+    gpio_mode_setup(GPIOD, GPIO_MODE_INPUT, GPIO_PUPD_PULLDOWN, GPIO9);
     
-    // Center ring encoder
-    /* gpio_mode_setup(GPIOB, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5 | GPIO7);
-    gpio_set(GPIOB, GPIO7);   // set CSn to high
-    gpio_mode_setup(GPIOB, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO3); */
+    // Passive axis ring encoder
+    gpio_mode_setup(GPIOE, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO5 | GPIO6);
+    gpio_set(GPIOE, GPIO6);   // set CSn to high
+    gpio_mode_setup(GPIOE, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO4);
     
-    // Lower ring encoder
-    gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO2 | GPIO4);
-    gpio_set(GPIOD, GPIO4);   // set CSn to high
+    // Active axis ring encoder
+    gpio_mode_setup(GPIOD, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO1 | GPIO2);
+    gpio_set(GPIOD, GPIO2);   // set CSn to high
     gpio_mode_setup(GPIOD, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO0);
 
 }
@@ -68,32 +69,35 @@ as5xxx_data_t ssi_read(int do_port, int do_pin, int clk_port, int clk_pin, int c
     data.mag_inc = (raw_data >> 2) & 0x1;
     data.mag_dec = (raw_data >> 1) & 0x1;
     
-    gpio_set(csn_port, csn_pin);
+    gpio_set(csn_port, csn_pin);  // CSn = 1
+    
+    ssi_delay(30);  // ?
     
     return data;
 }
 
 as5xxx_data_t ssi_read_motor(void)
 {
-    // PE15: DATA, PE11: CLK, PE13: CSn
-    return ssi_read(GPIOE, GPIO15, GPIOE, GPIO11, GPIOE, GPIO13);
+    // PE11: DATA, PE12: CLK, PE13: CSn
+    return ssi_read(GPIOE, GPIO11, GPIOE, GPIO12, GPIOE, GPIO13);
 }
 
-as5xxx_data_t ssi_read_lower_axis(void)
+as5xxx_data_t ssi_read_active_axis(void)
 {
-    // PD11: DATA, PD13: CLK, PD15: CSn
-    return ssi_read(GPIOD, GPIO11, GPIOD, GPIO13, GPIOD, GPIO15);
+    // PD9: DATA, PD10: CLK, PD11: CSn
+    return ssi_read(GPIOD, GPIO9, GPIOD, GPIO10, GPIOD, GPIO11);
 }
 
-as5xxx_data_t ssi_read_center_ring(void)
+as5xxx_data_t ssi_read_passive_ring(void)
 {
-    // PB3: DATA, PB5: CLK, PB7: CSn
-    return ssi_read(GPIOB, GPIO3, GPIOB, GPIO5, GPIOB, GPIO7);
+    // PE4: DATA, PE5: CLK, PE6: CSn
+    return ssi_read(GPIOE, GPIO4, GPIOE, GPIO5, GPIOE, GPIO6);
 }
 
-as5xxx_data_t ssi_read_lower_ring(void)
+// Active axis ring encoder
+as5xxx_data_t ssi_read_active_ring(void)
 {
-    // PD0: DATA, PD2: CLK, PD4: CSn
-    return ssi_read(GPIOD, GPIO0, GPIOD, GPIO2, GPIOD, GPIO4);
+    // PD0: DATA, PD1: CLK, PD2: CSn
+    return ssi_read(GPIOD, GPIO0, GPIOD, GPIO1, GPIOD, GPIO2);
 }
 

@@ -16,8 +16,8 @@ typedef struct {
 
 void ssi_setup(void);
 as5xxx_data_t ssi_read_motor(void);
-as5xxx_data_t ssi_read_lower_axis(void);
-as5xxx_data_t ssi_read_center_ring(void);
-as5xxx_data_t ssi_read_lower_ring(void);
+as5xxx_data_t ssi_read_active_axis(void);
+as5xxx_data_t ssi_read_active_ring(void);
+as5xxx_data_t ssi_read_passive_ring(void);
 
 #endif

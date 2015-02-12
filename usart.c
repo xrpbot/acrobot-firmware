@@ -1,4 +1,5 @@
 #include "usart.h"
+#include "transport.h"
 #include <libopencm3/stm32/rcc.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/usart.h>
@@ -10,17 +11,9 @@
 
 #define USART_CONSOLE USART2
 
-#define MSG_START_CHAR 0x40
-#define MSG_END_CHAR   0x41
-
-volatile uint8_t msg_recv = 0;
-volatile uint8_t msg_ready = 0;
-volatile uint8_t msg_len = 0;
+volatile int usart_dma_tx_complete = 0;
 
 int _write(int file, char *ptr, int len);
-
-volatile uint8_t msg_buf[256] = { 0 };
-volatile int usart_dma_tx_complete = 0;
 
 void usart_setup(void)
 {
@@ -136,28 +129,12 @@ int _write(int file, char *ptr, int len)
 void usart2_isr(void)
 {
     if(usart_get_flag(USART2, USART_SR_RXNE)) {
-        uint8_t ch = usart_recv(USART2);
-        if(!msg_recv) {
-            if(!msg_ready && ch == MSG_START_CHAR) {
-                msg_recv = true;
-                msg_len = 0;
-            }
-        } else {
-            if(ch == MSG_END_CHAR) {
-                msg_len = msg_len / 2;
-                msg_recv = false;
-                msg_ready = true;
-            } else {
-                if((msg_len % 2) == 0) {
-                    msg_buf[msg_len/2] = ch << 4;
-                } else {
-                    msg_buf[msg_len/2] = msg_buf[msg_len/2] + (ch & 0x0F);
-                }
-                msg_len++;
-            }
-        }
-        
+        tp_process_byte(usart_recv(USART2));
         USART_SR(USART2) &= ~USART_SR_RXNE;
     }
 }
 
+int usart_tx_complete(void)
+{
+    return usart_dma_tx_complete;
+}

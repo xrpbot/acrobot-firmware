@@ -1,0 +1,45 @@
+Sensors
+=======
+Passive axis: AS5311 ring sensor
+* 12 bit serial
+* 10 bit quadrature (not used)
+* Ring: AS5000-MR10-128 (128 pole ring magnet)
+  => 64 pole pairs
+  => 16/18 bit per full rev.
+
+Passive axis: light barrier
+
+Active axis: AS5311 ring sensor (see above)
+
+Active axis: AS5045
+* 12 bit serial
+* No quadrature
+
+Motor axis: AS5040
+* 10 bit serial
+* 10 bit quadrature
+
+AS5045 non-linearity (see datasheet section 17)
+* better than +- 0.5 deg (ideal)
+* better than +- 1.4 deg (process tolerances, temperature, 0.25mm misalignment)
+
+Commands
+========
+
+
+
+Timing
+======
+
+PWM timer: TIM1 (clock: 168 MHz (?))
+Prescaler: 2
+Period: 1 << 11 = 2048
+Up/Downcounting mode
+
+One half-period: 24.38 µs (41 kHz)
+
+
+AS5040 sample rate: 10.42 ksps
+
+Data transfer rate: 2.5 Mbps
+

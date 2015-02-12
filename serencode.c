@@ -50,6 +50,11 @@ void se_puti32(uint32_t x)
     se_putchr((x & 0xFF000000) >> 24);
 }
 
+void se_putf32(float x)
+{
+    se_puti32(*((uint32_t*)&x));
+}
+
 void se_putdata(const char* c, int n)
 {
     int i;

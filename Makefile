@@ -16,10 +16,10 @@
 ## You should have received a copy of the GNU Lesser General Public License
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
-## Modified by Norbert Braun for the PCBWriter project.
+## Modified by Norbert Braun for the XRPBot project.
 
 BINARY = brushless
-OBJS += usart.o serencode.o statusled.o ssi.o trajectory.o
+OBJS += usart.o serencode.o statusled.o ssi.o sensors.o trajectory.o pwm.o quadrature.o adc.o transport.o current.o util.o vel_ctrl.o pumping_ctrl.o
 
 LDSCRIPT = stm32f4-discovery.ld
 

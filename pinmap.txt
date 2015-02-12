@@ -1,64 +1,90 @@
+List of unused ports on STM32 board
+-----------------------------------
+PORTA: PA1, PA2, PA3, PA8, PA15
+PORTB: PB0, PB1, PB2, PB4, PB5, PB7, PB8, PB11, PB12, PB13, PB14, PB15
+PORTC: PC1, PC2, PC4, PC5, PC6, PC8, PC9, PC11, PC13
+PORTD: PD0, PD1, PD2, PD3, PD6, PD7, PD8, PD9, PD10, PD11
+PORTE: PE2, PE4, PE5, PE6, PE7, PE8, PE9, PE10, PE11, PE12, PE13, PE14, PE15
+
 Motor encoder (AS5040)
 ----------------------
-
 1 - black  - GND   - GND
 2 - red    - +5V   - +5V
 3 - blue   - PROG  - N/C
-4 - pink   - DO    - PE15
-5 - grey   - CLK   - PE11
-6 - yellow - CSn   - PE13
-7 - green  - A     - PB4
-8 - brown  - B     - PB5
-9 - white  - Index
+4 - pink   - DO    - PE11 (GPIO)
+5 - grey   - CLK   - PE12 (GPIO)
+6 - yellow - CSn   - PE13 (GPIO)
+7 - green  - A     - PB4  (TIM3_CH1)
+8 - brown  - B     - PB5  (TIM3_CH2)
+9 - white  - Index - N/C
 
 NOTE: signal level is 3.3V!
 
+Active axis ring encoder (AS5311)
+---------------------------------
+1 - black  - GND - GND
+2 - red    - +5V - +5V
+3 - blue   - A
+4 - pink   - B
+5 - grey   - Idx
+6 - yellow - CSn - PD2
+7 - green  - CLK - PD1
+8 - brown  - DO  - PD0
 
-Axis encoder (AS5311)
----------------------
+Active axis center encoder (AS5045)
+-----------------------------------
+1 - black  - GND   - GND
+2 - red    - +5V   - +5V
+3 - blue   - PROG  - (PD7)
+4 - pink   - DO    - PD9
+5 - grey   - CLK   - PD10
+6 - yellow - CSn   - PD11
 
+Passive axis ring encoder (AS5311)
+----------------------------------
 1 - black  - GND
 2 - red    - +5V
 3 - blue   - A
 4 - pink   - B
 5 - grey   - Idx
-6 - yellow - CSn
-7 - green  - CLK
-8 - brown  - DO
+6 - yellow - CSn - PE6
+7 - green  - CLK - PE5
+8 - brown  - DO  - PE4
 
+Passive axis index light barrier
+--------------------------------
+1 - black  - GND - GND
+2 - red    - +5V - +5V
+3 - blue   - SIG - PA8
 
-Potentiometer (legacy)
-----------------------
+Motor interface
+---------------
+1 - green  - UH  - PC6  (TIM8_CH1)
+2 - yellow - UL  - PA7  (TIM8_CH1N) (!!!)
+3 - grey   - VH  - PC7  (TIM8_CH2)  (!!!)
+4 - pink   - VL  - PB14 (TIM8_CH2N)
+5 - blue   - WH  - PC8  (TIM8_CH3)
+6 - red    - WL  - PB15 (TIM8_CH3N)
+7 - black  - GND - GND
 
-black  - GND        - GND
-red    - +3V        - +3V
-yellow - Analog out - PA1
+(!!!) = collision with other function on STM32discovery board
+
+Motor current
+-------------
+X - (coax) - CUR_U - PC1 (ADC123_IN11)
+X - (coax) - CUR_W - PC2 (ADC123_IN12)
 
 
 Serial interface
 ----------------
-
-!!! WRONG !!! FIXME !!!
-green  - TX (data from STM32) - PA2
-yellow - RX (data to STM32)   - PA3
+blue - TX (data from STM32) - PA2
+pink - RX (data to STM32)   - PA3
 
 
 RS485 interface (ext. board)
 ----------------------------
-
 blue        - RX (data to STM32)    - A
 blue/white  - nRX                   - B
 green/white - nTX (data from STM32) - Z
 green       - TX                    - Y
 
-
-Motor interface
----------------
-
-1 - brown  - GND - GND
-2 - red    - UH  - PC6
-3 - orange - UL  - PA7
-4 - yellow - VH  - PC7
-5 - green  - VL  - PB14
-6 - blue   - WH  - PC8
-7 - pink   - WL  - PB15

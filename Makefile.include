@@ -18,7 +18,7 @@
 ## You should have received a copy of the GNU Lesser General Public License
 ## along with this library.  If not, see <http://www.gnu.org/licenses/>.
 ##
-## Modified by Norbert Braun for the PCBWriter project.
+## Modified by Norbert Braun for the XRPBot project.
 
 PREFIX	?= arm-none-eabi
 CC		= $(PREFIX)-gcc
@@ -26,7 +26,9 @@ LD		= $(PREFIX)-gcc
 OBJCOPY		= $(PREFIX)-objcopy
 OBJDUMP		= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
-FLASH		= $(shell which st-flash)
+RESET		= ./st-reset.py
+FLASH		= $(shell which SerialBoot)
+
 
 CFLAGS		+= -O0 -g -std=gnu99 \
 		   -I$(TOOLCHAIN_DIR)/include \
@@ -95,9 +97,10 @@ clean:
 	$(Q)rm -f *.srec
 	$(Q)rm -f *.list
 
-%.flash: %.bin
+%.flash: %.srec
 	@printf "  FLASH  $<\n"
-	$(Q)$(FLASH) write $(*).bin 0x8000000
+	$(Q)$(RESET)
+	$(Q)$(FLASH) -d/dev/ttyUSB0 -b2500000 $<
 
 .PHONY: images clean flash
 
