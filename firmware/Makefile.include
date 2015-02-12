@@ -26,7 +26,7 @@ LD		= $(PREFIX)-gcc
 OBJCOPY		= $(PREFIX)-objcopy
 OBJDUMP		= $(PREFIX)-objdump
 GDB		= $(PREFIX)-gdb
-RESET		= ./st-reset.py
+RESET		= ../host/st-reset.py
 FLASH		= $(shell which SerialBoot)
 
 
